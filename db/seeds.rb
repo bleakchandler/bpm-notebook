@@ -3,7 +3,9 @@ User.reset_pk_sequence
 Setlist.destroy_all
 Setlist.reset_pk_sequence
 Song.destroy_all
-Song.reset_pk_sequence 
+Song.reset_pk_sequence
+Performance.destroy_all
+Performance.reset_pk_sequence
 
 start_seeding = Time.now
 
@@ -16,15 +18,18 @@ josh_setlist = josh.new_setlist( name: "Josh's awesome set", tempo: 130.5, user_
 james_setlist = james.new_setlist( name: "James's amazing set", tempo: 110.25, user_id: 2 )
 
 thriller_id = "3S2R0EVwBSAVMd5UMgKTL0"
-
 bad_id = "3FvQH46A4B37eNHjooIXcu"
 
-Song.create(setlist_id:1, spotify_id: thriller_id)
-Song.create(setlist_id:2, spotify_id: bad_id)
+thriller = Song.create( spotify_id: thriller_id )
+Performance.create( setlist_id: josh_setlist.id , song_id: thriller.id )
+Performance.create( setlist_id: james_setlist.id , song_id: thriller.id )
 
+bad = Song.create( spotify_id: bad_id )
+Performance.create( setlist_id: james_setlist.id , song_id: bad.id  )
 
 done_seeding = Time.now
 
 puts "Seeded: #{ done_seeding - start_seeding }"
+
 binding.pry
 0
