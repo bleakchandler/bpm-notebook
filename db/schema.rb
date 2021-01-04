@@ -10,12 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_04_203401) do
+ActiveRecord::Schema.define(version: 2021_01_04_212222) do
 
   create_table "setlists", force: :cascade do |t|
     t.string "name"
     t.float "tempo"
     t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "songs", force: :cascade do |t|
+    t.integer "setlist_id"
+    t.string "spotify_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

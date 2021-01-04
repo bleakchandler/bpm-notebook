@@ -4,15 +4,15 @@
   # #update_username
   # #update_password
   # #new_setlist
-  
+
   class User < ActiveRecord::Base
 
   has_many :setlists
-  # has_many :songs through :setlists
+  has_many :songs, through: :setlists
 
   attr_reader :spotify_user
-  attr_accessor :username, :password 
-  
+  attr_accessor :username, :password
+
   def initialize(arguments)
     super(arguments)
     @spotify_user = RSpotify::User.find(self.spotify_username)
