@@ -57,8 +57,19 @@ class Interface
     end
 
     def manage_setlist( setlist_name, user )
-        #
-    end
+        # Setlist menu:
+        #   -print a list of current songs
+        #   -option to add a song from spotify
+        #   -option to remove a song from spotify
+        #   -clear playlist
+        #   -go back to main menu
+        # menu_hash = Setlist.find_by(name: setlist_name).songs.map{ |song| [song.to_s, song.id]  }
+        system "clear"
+        puts "Setlist name: #{setlist_name}"
+        Setlist.find_by(name: setlist_name).songs.each_with_index {|song, index| puts "#{index + 1}. #{song.to_s}" }
+        menu_hash = {"Add song from Spotify": :add, "Remove song from setlist": :remove, "Clear setlist": :clear, "Go back to main menu": :back}
+        self.prompt.select("Options:", menu_hash)
+      end
 
     def create_new_setlist( user )
         system "clear"
