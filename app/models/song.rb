@@ -3,12 +3,12 @@ class Song < ActiveRecord::Base
   has_many :performances
   has_many :setlists, through: :performances
 
-  attr_reader :info, :features
+  def info
+    RSpotify::Track.find( self.spotify_id )
+  end
 
-  def initialize( arguments )
-    super( arguments )
-    @info =     RSpotify::Track.find( self.spotify_id )
-    @features = RSpotify::AudioFeatures.find( self.spotify_id )
+  def features
+    RSpotify::AudioFeatures.find( self.spotify_id )
   end
 
   def name
@@ -46,6 +46,5 @@ class Song < ActiveRecord::Base
   def loudness
     self.features.loudness
   end 
-
 
 end

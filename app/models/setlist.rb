@@ -16,7 +16,10 @@ class Setlist < ActiveRecord::Base
       Performance.where(setlist_id: self.id).destroy_all
     end
 
-    
+    def has_song_by_spotify_id?( song_spotify_id )
+      return false if song_spotify_id.length < 22
+      Performance.where( setlist_id: self.id, song_id: Song.find_by( spotify_id: song_spotify_id ).id ).empty?
+    end
 
-
+    # User.find( self.user_id ).songs_to_choose_from
 end

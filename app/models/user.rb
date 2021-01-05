@@ -9,11 +9,8 @@ class User < ActiveRecord::Base
 
   has_many :setlists
 
-  attr_reader :spotify_user
-
-  def initialize( arguments )
-    super( arguments )
-    @spotify_user = RSpotify::User.find( self.spotify_username )
+  def spotify_user
+    RSpotify::User.find( self.spotify_username )
   end
 
   # set_arguments = { name: set_name, tempo: set_tempo }
@@ -22,7 +19,13 @@ class User < ActiveRecord::Base
   end
 
   def remove_setlist( name )
+    return nil if Setlist.find_by(name: name).nil?
     Setlist.find_by(name: name).destroy
+  end
+
+  def clear_setlist( name )
+    return nil if Setlist.find_by(name: name).nil?
+    Setlist.find_by(name: name).clear
   end
   
   def all_spotify_playlists
@@ -40,7 +43,5 @@ class User < ActiveRecord::Base
   def songs_to_choose_from
     all_spotify_ids.map{ | id | Song.create( spotify_id: id ) }
   end
-
-
 
 end
