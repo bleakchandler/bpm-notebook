@@ -1,5 +1,5 @@
 class Song < ActiveRecord::Base
-  
+
   has_many :performances
   has_many :setlists, through: :performances
 
@@ -34,5 +34,18 @@ class Song < ActiveRecord::Base
   def danceability
     self.features.danceability
   end
+
+  def energy
+    self.features.energy
+  end
+
+  def valence
+    self.features.valence
+  end
+
+  def loudness
+    self.features.loudness
+  end 
+
 
 end
