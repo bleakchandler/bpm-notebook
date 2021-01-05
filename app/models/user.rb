@@ -29,4 +29,12 @@ class User < ActiveRecord::Base
     all_spotify_playlists.collect{ | playlist | playlist.tracks }.flatten
   end
 
+  def all_spotify_ids
+    all_spotify_songs.collect( &:id )
+  end
+
+  def songs_to_choose_from
+    all_spotify_ids.map{ | id | Song.create( spotify_id: id ) }
+  end
+
 end
