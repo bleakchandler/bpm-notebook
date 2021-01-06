@@ -94,7 +94,7 @@ class BPMNotebook
       while true
         choice = interface.setlist_menu( setlist_name_symbol.to_s )
         if choice == :add
-          # add_to_setlist_menu( setlist_name_symbol, interface )
+          add_to_setlist( setlist_name_symbol, interface)
         elsif choice == :remove
           remove_from_setlist( setlist_name_symbol, interface )
         elsif choice == :clear
@@ -103,6 +103,24 @@ class BPMNotebook
           break
         end
       end
+    end
+
+    def add_to_setlist(setlist_name_symbol, interface)
+      #add_to_setlist:
+      # => display a list of a users spofity playlists to select a song from
+      # => once a user chooses a list, display a list of the spotify songs in the playlist
+      # => once a song is chosen, confirm, create a new song object, create a new performance object, and display confirmation message
+      playlist_to_choose_from = interface.choose_playlist_to_add_from_menu(setlist_name_symbol.to_s )
+      song_from_chosen_playlist = interface.choose_song_from_playlist_menu(playlist_to_choose_from , setlist_name_symbol.to_s)
+      confirmed = interface.add_song_to_setlist_confirmation(song_from_chosen_playlist, setlist_name_symbol.to_s)
+      if confirmed
+        created_song = Song.create(spotify_id: song_from_chosen_playlist)
+        Performance.create(song_id: created_song.id, setlist_id: Setlist.find_by(name: setlist_name_symbol.to_s).id)
+        puts "#{created_song.name} has been successfully added to #{setlist_name_symbol.to_s}"
+      else
+        puts "Add song canceled."
+      end
+      interface.prompt.keypress("Press any key to continue")
     end
 
     def remove_from_setlist( setlist_name_symbol, interface )

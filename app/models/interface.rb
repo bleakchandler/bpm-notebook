@@ -19,7 +19,7 @@ class Interface
         # - (delete setlist)
         # - (quit)
         system "clear"
-        menu_hash = user.setlists.map{ | setlist | [ setlist.name, setlist.name.to_sym ] }.to_h
+        menu_hash = user.setlists.map{ | setlist | [ "#{setlist.name} (#{Setlist.find_by(name: setlist.name).tempo} BPM)", setlist.name.to_sym ] }.to_h
         menu_hash.store( "(new setlist)".to_sym, :new_setlist )
         menu_hash.store( "(delete setlist)".to_sym, :delete_setlist )
         menu_hash.store( "(quit)".to_sym, :goodbye )
@@ -34,7 +34,7 @@ class Interface
         #   -clear playlist
         #   -go back to main menu
         system "clear"
-        puts "Setlist name: #{setlist_name}"
+        puts "Setlist name: #{setlist_name} (#{Setlist.find_by(name: setlist_name).tempo} BPM)"
         if Setlist.find_by(name: setlist_name).songs.empty?
           puts "(no songs)"
         else
@@ -58,6 +58,31 @@ class Interface
       menu_hash.store( "(cancel)".to_sym, :cancel )
       self.prompt.select("Choose a song or cancel:", menu_hash )
     end
+
+    def choose_playlist_to_add_from_menu( setlist_name )
+      system 'clear'
+      puts "User #{Setlist.find_by(name: setlist_name).user.name}'s Spotify playlists: "
+      user_spotify_playlists = Setlist.find_by(name: setlist_name).user.all_spotify_playlists
+      return nil if user_spotify_playlists.empty?
+      menu_hash = user_spotify_playlists.map{|playlist| [playlist.name, playlist]  }.to_h
+      menu_hash.store("Go back".to_sym, :back)
+      self.prompt.select("Choose a playlist to add songs from", menu_hash)
+    end
+
+    def choose_song_from_playlist_menu(playlist , setlist_name)
+      system 'clear'
+      puts "#{Setlist.find_by(name: setlist_name).user.name}'s playlist: #{playlist.name}"
+      menu_of_spotify_songs = playlist.tracks.map{|song| [song.name, song.id]   }.to_h
+      menu_of_spotify_songs.store("Go back".to_sym, :back)
+      self.prompt.select("Choose a song from playlist #{playlist.name} to add to #{setlist_name}", menu_of_spotify_songs)
+    end
+
+    def add_song_to_setlist_confirmation(song_spotify_id, setlist_name)
+      self.prompt.yes?("Are you sure you want to add this song to #{setlist_name}?")
+    end
+
+
+
 
     def goodbye
         puts "Awesome Goodbye screen"
