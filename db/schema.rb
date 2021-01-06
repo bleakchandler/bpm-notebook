@@ -29,6 +29,14 @@ ActiveRecord::Schema.define(version: 2021_01_04_220242) do
 
   create_table "songs", force: :cascade do |t|
     t.string "spotify_id"
+    t.string "name"
+    t.string "artist"
+    t.integer "released"
+    t.float "tempo"
+    t.float "danceability"
+    t.float "energy"
+    t.float "valence"
+    t.float "loudness"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

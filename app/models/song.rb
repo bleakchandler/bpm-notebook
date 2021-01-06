@@ -3,48 +3,36 @@ class Song < ActiveRecord::Base
   has_many :performances
   has_many :setlists, through: :performances
 
-  def info
-    RSpotify::Track.find( self.spotify_id )
-  end
+  attr_accessor :info, :features
 
-  def features
-    RSpotify::AudioFeatures.find( self.spotify_id )
-  end
-
-  def name
-    self.info.name
-  end
-
-  def artist
-    self.info.artists.first.name
-  end
-
-  def released
-    self.info.album.release_date.split( "-" ).first
+  def initialize( arguments )
+    super( arguments )
+    self.info = RSpotify::Track.find( self.spotify_id )
+    self.features = RSpotify::AudioFeatures.find( self.spotify_id )
+    self.name = self.info.name
+    self.artist = self.info.artists.first.name
+    self.released = self.info.album.release_date.split( "-" ).first.to_i
+    self.tempo = self.features.tempo
+    self.danceability = self.features.danceability
+    self.energy = self.features.energy
+    self.valence = self.features.valence
+    self.loudness = self.features.loudness
+    self.save
   end
 
   def to_s
     "#{ self.name } - #{ self.artist } (#{ self.released })"
   end
 
-  def tempo
-    self.features.tempo
-  end
-
-  def danceability
-    self.features.danceability
-  end
-
-  def energy
-    self.features.energy
-  end
-
-  def valence
-    self.features.valence
-  end
-
-  def loudness
-    self.features.loudness
-  end 
-
 end
+
+# Song.update( self.id, 
+# :name => self.info.name,
+# :artist => self.info.artists.first.name,
+# :released => self.info.album.release_date.split( "-" ).first.to_i,
+# :tempo => self.features.tempo,
+# :danceability => self.features.danceability,
+# :energy => self.features.energy,
+# :valence => self.features.valence,
+# :loudness => self.features.loudness,
+# )

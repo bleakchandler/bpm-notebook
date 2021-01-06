@@ -12,76 +12,51 @@ class Interface
         self.prompt.keypress("Press any key to continue")
     end
 
-    def create_or_log_in_user
-        system "clear"
-        user_logging_in = self.prompt.ask("Enter Username")
-        user_logged_in = nil
-        if User.where(name: user_logging_in).empty?
-          puts "Hm.. looks like there is no user with that name. Let's create one!"
-          user_logged_in = self.create_new_user(user_logging_in)
-        else
-          user_logged_in = User.find_by(name: user_logging_in)
-          puts "Welcome back, #{user_logged_in.name}!"
-          password_attempt = self.prompt.mask("Enter your password")
-          while password_attempt != user_logged_in.password do
-            puts "Incorrect password, please try again."
-          end
-          puts "#{ user_logged_in.name } has logged in successfully"
-          self.prompt.keypress("Press any key to continue")
-        end
-        user_logged_in.id
-    end
-
-    def create_new_user(new_username)
-        new_user_arguments = {name: new_username}
-        new_user_arguments[:spotify_username] = self.prompt.ask("Enter your Spotify username")
-        new_user_arguments[:password] = self.prompt.mask("Enter a password")
-        password_confirmation = self.prompt.mask("Confirm your password")
-        while password_confirmation != new_user_arguments[:password] do
-          puts "Passwords do not match, please try again"
-          password_confirmation = self.prompt.mask("Confirm your password")
-        end
-        User.create(new_user_arguments).id
-    end
-
     def main_menu( user )
         # Main menu:
         # - list of all setlists
         # - (create new setlist)
+        # - (delete setlist)
         # - (quit)
         system "clear"
         menu_hash = user.setlists.map{ | setlist | [ setlist.name, setlist.name.to_sym ] }.to_h
         menu_hash.store( "(new setlist)".to_sym, :new_setlist )
+        menu_hash.store( "(delete setlist)".to_sym, :delete_setlist )
         menu_hash.store( "(quit)".to_sym, :goodbye )
         self.prompt.select("Choose a setlist or create a new setlist:", menu_hash )
     end
 
-    def manage_setlist( setlist_name, user )
+    def setlist_menu( setlist_name )
         # Setlist menu:
         #   -print a list of current songs
         #   -option to add a song from spotify
         #   -option to remove a song from spotify
         #   -clear playlist
         #   -go back to main menu
-        # menu_hash = Setlist.find_by(name: setlist_name).songs.map{ |song| [song.to_s, song.id]  }
         system "clear"
         puts "Setlist name: #{setlist_name}"
-        Setlist.find_by(name: setlist_name).songs.each_with_index {|song, index| puts "#{index + 1}. #{song.to_s}" }
+        if Setlist.find_by(name: setlist_name).songs.empty?
+          puts "(no songs)"
+        else
+          Setlist.find_by(name: setlist_name).songs.each_with_index {|song, index| puts "#{index + 1}. #{song.to_s}" }
+        end
         menu_hash = {"Add song from Spotify": :add, "Remove song from setlist": :remove, "Clear setlist": :clear, "Go back to main menu": :back}
         self.prompt.select("Options:", menu_hash)
-      end
-
-    def create_new_setlist( user )
-        system "clear"
-        new_setlist_name = self.prompt.ask( "Enter a name for your new setlist" )
-        new_setlist_tempo = self.prompt.ask( "Enter a tempo for your new setlist", convert: :float )
-        Setlist.create( name: new_setlist_name, tempo: new_setlist_tempo, user_id: user.id )
-        puts "Setlist '#{ new_setlist_name }' successfully created!"
-        self.prompt.keypress("Press any key to continue")
     end
 
-    def setlist_edit_menu
-        #
+    def delete_setlist_menu( user )
+      return nil if user.setlists.empty?
+      menu_hash = user.setlists.map{ | setlist | [ setlist.name, setlist.name.to_sym ] }.to_h
+      menu_hash.store( "(cancel)".to_sym, :cancel )
+      self.prompt.select( "Select a setlist to delete:", menu_hash )
+    end
+
+    def remove_from_setlist_menu( setlist_name )
+      system "clear"
+      return nil if Setlist.find_by( name: setlist_name ).songs.empty?
+      menu_hash = Setlist.find_by( name: setlist_name ).songs.map{ | song | [ song.name, song.name.to_sym ] }.to_h
+      menu_hash.store( "(cancel)".to_sym, :cancel )
+      self.prompt.select("Choose a song or cancel:", menu_hash )
     end
 
     def goodbye
