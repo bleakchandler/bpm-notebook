@@ -95,6 +95,8 @@ class BPMNotebook
         choice = interface.setlist_menu( setlist_name_symbol.to_s )
         if choice == :add
           add_to_setlist( setlist_name_symbol, interface)
+        elsif choice == :suggest
+          suggest_for_setlist( setlist_name_symbol, interface )
         elsif choice == :remove
           remove_from_setlist( setlist_name_symbol, interface )
         elsif choice == :clear
@@ -110,7 +112,7 @@ class BPMNotebook
       # => display a list of a users spofity playlists to select a song from
       # => once a user chooses a list, display a list of the spotify songs in the playlist
       # => once a song is chosen, confirm, create a new song object, create a new performance object, and display confirmation message
-      playlist_to_choose_from = interface.choose_playlist_to_add_from_menu(setlist_name_symbol.to_s )
+      playlist_to_choose_from = interface.choose_playlist_to_add_or_suggest_from_menu( setlist_name_symbol.to_s, :add )
       song_from_chosen_playlist = interface.choose_song_from_playlist_menu(playlist_to_choose_from , setlist_name_symbol.to_s)
       confirmed = interface.add_song_to_setlist_confirmation(song_from_chosen_playlist, setlist_name_symbol.to_s)
       if confirmed
@@ -121,6 +123,31 @@ class BPMNotebook
         puts "Add song canceled."
       end
       interface.prompt.keypress("Press any key to continue")
+    end
+
+    def suggest_for_setlist( setlist_name_symbol, interface )
+      #suggest_for_setlist
+      # => display a list of a user's spofity playlists to suggest a song from
+      # => once a user chooses a list, display a list of features to suggest by and then ask how to suggest:
+        # :tempo, :danceability, :energy, :valence, :loudness
+      # => once a user selects a filter for suggestion, display a list of songs to choose from that match that filter
+      # => once a song is chosen, confirm, create a new song object, create a new performance object, and display confirmation message
+      playlist_to_choose_from = interface.choose_playlist_to_add_or_suggest_from_menu( setlist_name_symbol.to_s, :suggest )
+      if playlist_to_choose_from != :back
+        feature_to_suggest_by = interface.choose_feature_menu
+        how_to_suggest = interface.suggestion_filter_menu( feature_to_suggest_by, setlist_name_symbol.to_s )
+        suggested_song = interface.suggested_songs_menu( playlist_to_choose_from, feature_to_suggest_by, how_to_suggest, setlist_name_symbol.to_s )
+        if suggested_song != :back
+          created_song = Song.create( spotify_id: suggested_song )
+          Performance.create( song_id: created_song.id, setlist_id: Setlist.find_by( name: setlist_name_symbol.to_s ).id )
+          puts "Suggested song '#{ created_song.name }'' has been successfully added to #{ setlist_name_symbol.to_s }"
+          else
+            puts "Cancelled - suggestion not added to setlist '#{ setlist_name_symbol.to_s }'"
+          end
+      else
+        puts "Cancelled - suggestion not made for setlist '#{ setlist_name_symbol.to_s }'"
+      end
+      interface.prompt.keypress( "Press any key to continue" )
     end
 
     def remove_from_setlist( setlist_name_symbol, interface )

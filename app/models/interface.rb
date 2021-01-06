@@ -40,7 +40,7 @@ class Interface
         else
           Setlist.find_by(name: setlist_name).songs.each_with_index {|song, index| puts "#{index + 1}. #{song.to_s}" }
         end
-        menu_hash = {"Add song from Spotify": :add, "Remove song from setlist": :remove, "Clear setlist": :clear, "Go back to main menu": :back}
+        menu_hash = {"Add song from Spotify": :add, "Suggest song from Spotify": :suggest, "Remove song from setlist": :remove, "Clear setlist": :clear, "Go back to main menu": :back}
         self.prompt.select("Options:", menu_hash)
     end
 
@@ -59,14 +59,14 @@ class Interface
       self.prompt.select("Choose a song or cancel:", menu_hash )
     end
 
-    def choose_playlist_to_add_from_menu( setlist_name )
+    def choose_playlist_to_add_or_suggest_from_menu( setlist_name, add_or_suggest )
       system 'clear'
       puts "User #{Setlist.find_by(name: setlist_name).user.name}'s Spotify playlists: "
       user_spotify_playlists = Setlist.find_by(name: setlist_name).user.all_spotify_playlists
       return nil if user_spotify_playlists.empty?
       menu_hash = user_spotify_playlists.map{|playlist| [playlist.name, playlist]  }.to_h
       menu_hash.store("Go back".to_sym, :back)
-      self.prompt.select("Choose a playlist to add songs from", menu_hash)
+      self.prompt.select("Choose a playlist to #{ add_or_suggest == :add ? "add" : "suggest" } songs from", menu_hash)
     end
 
     def choose_song_from_playlist_menu(playlist , setlist_name)
@@ -81,8 +81,44 @@ class Interface
       self.prompt.yes?("Are you sure you want to add this song to #{setlist_name}?")
     end
 
+    def choose_feature_menu
+      self.prompt.select( "Choose a feature to suggest by", { "Tempo": :tempo, "Danceability": :danceability, "Energy": :energy, "Valence": :valence, "Loudness": :loudness} )
+    end
 
+    def suggestion_filter_menu( feature_to_suggest_by, setlist_name )
+      if feature_to_suggest_by == :tempo
+        tempo_min_max = self.prompt.ask( "How close to setlist's tempo should the suggested song be?", convert: :float )
+        this_setlist = Setlist.find_by( name: setlist_name )
+        return ( ( this_setlist.tempo - tempo_min_max )..( this_setlist.tempo + tempo_min_max ) )
+      elsif feature_to_suggest_by == :loudness
+        return ( -Float::INFINITY..self.prompt.ask( "What's the loudest the suggested song should be?", convert: :float ) )
+      else
+        feature_adjective = { danceability: "danceable", energy: "energetic", valence: "compressed" }
+        feature_min_max = self.prompt.ask( "How #{ feature_adjective[ feature_to_suggest_by ] } should the suggested song be?", convert: :float )
+        return ( ( feature_min_max - 0.15 )..( feature_min_max + 0.15 ) )
+      end
+    end
 
+    def suggested_songs_menu( playlist_to_choose_from, feature_to_suggest_by, how_to_suggest, setlist_name )
+      system "clear"
+      puts "Suggestions from #{Setlist.find_by(name: setlist_name).user.name}'s playlist '#{playlist_to_choose_from.name}' - filtered by #{ feature_to_suggest_by.to_s } ±#{ how_to_suggest.to_s }"
+      playlist_spotify_ids = playlist_to_choose_from.tracks.map( &:id )
+      suggested_song_ids = nil
+      if feature_to_suggest_by == :tempo
+        suggested_song_ids = playlist_spotify_ids.select{ | song_id | how_to_suggest.cover?( RSpotify::AudioFeatures.find( song_id ).tempo ) }
+      elsif feature_to_suggest_by == :danceability
+        suggested_song_ids = playlist_spotify_ids.select{ | song_id | how_to_suggest.cover?( RSpotify::AudioFeatures.find( song_id ).danceability ) }
+      elsif feature_to_suggest_by == :energy
+        suggested_song_ids = playlist_spotify_ids.select{ | song_id | how_to_suggest.cover?( RSpotify::AudioFeatures.find( song_id ).energy ) }
+      elsif feature_to_suggest_by == :valence
+        suggested_song_ids = playlist_spotify_ids.select{ | song_id | how_to_suggest.cover?( RSpotify::AudioFeatures.find( song_id ).valence ) }
+      elsif feature_to_suggest_by == :loudness
+        suggested_song_ids = playlist_spotify_ids.select{ | song_id | how_to_suggest.cover?( RSpotify::AudioFeatures.find( song_id ).loudness ) }
+      end
+      menu_of_suggested_song_ids = suggested_song_ids.map{ | song_id | [ RSpotify::Track.find( song_id ).name, song_id ] }.to_h
+      menu_of_suggested_song_ids.store("Go back".to_sym, :back)
+      self.prompt.select( "Choose a suggested song from playlist #{playlist_to_choose_from.name} to add to #{setlist_name}", menu_of_suggested_song_ids )
+    end
 
     def goodbye
         puts "Awesome Goodbye screen"
