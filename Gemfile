@@ -12,3 +12,5 @@ gem "tty-prompt"
 gem "colorize"
 
 gem 'rspotify'
+
+gem 'dotenv'

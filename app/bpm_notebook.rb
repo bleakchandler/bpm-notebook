@@ -1,9 +1,12 @@
+require 'dotenv'
+Dotenv.load
+
 class BPMNotebook
 
     attr_accessor :user_id
 
     def run
-      RSpotify.authenticate("193b198408134255a518e263e5506194", "06b7fd3055584073a81b631ef4e8c8e6")
+      RSpotify.authenticate( ENV[ 'CLIENT_ID' ], ENV[ 'CLIENT_SECRET' ] )
       interface = Interface.new
       interface.welcome
       self.user_id = create_or_log_in_user( interface )
