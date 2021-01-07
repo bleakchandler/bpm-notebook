@@ -47,7 +47,7 @@ class Interface
       else
         Setlist.find_by(name: setlist_name).songs.each_with_index {|song, index| puts "#{index + 1}. #{song.to_s}" }
       end
-      menu_hash = {"Add song from Spotify": :add, "Suggest song from Spotify": :suggest, "Remove song from setlist": :remove, "Clear setlist": :clear, "Go back to main menu": :back}
+      menu_hash = {"Add song from Spotify": :add, "Suggest song from Spotify": :suggest, "Remove song from setlist": :remove, "Export setlist": :export,  "Clear setlist": :clear, "Go back to main menu": :back}
       self.prompt.select("Options:", menu_hash)
     end
 

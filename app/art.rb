@@ -1,8 +1,8 @@
 class SongPlayer
-  
+
   attr_reader :command, :file_path
   attr_accessor :pid
-  
+
   def initialize
     @command = "afplay"
     @file_path = "because_you_move_me.mp3"
@@ -17,27 +17,10 @@ class SongPlayer
     Process.kill 'TERM', self.pid
     ""
   end
-  
+
 end
 
 class Equalizer
-def self.logo
-  puts <<-'EOF'
-
-                     ______     ______   __    __
-                    /\  == \   /\  == \ /\ "-./  \
-                    \ \  __<   \ \  _-/ \ \ \-./\ \
-                     \ \_____\  \ \_\    \ \_\ \ \_\
-                      \/_____/   \/_/     \/_/  \/_/
-   __   __     ______     ______   ______     ______     ______     ______     __  __
-  /\ "-.\ \   /\  __ \   /\__  _\ /\  ___\   /\  == \   /\  __ \   /\  __ \   /\ \/ /
-  \ \ \-.  \  \ \ \/\ \  \/_/\ \/ \ \  __\   \ \  __<   \ \ \/\ \  \ \ \/\ \  \ \  _"-.
-   \ \_\\"\_\  \ \_____\    \ \_\  \ \_____\  \ \_____\  \ \_____\  \ \_____\  \ \_\ \_\
-    \/_/ \/_/   \/_____/     \/_/   \/_____/   \/_____/   \/_____/   \/_____/   \/_/\/_/
-
-
-  EOF
-end
 
 def self.frame1
   f1 =  <<-'EOF'

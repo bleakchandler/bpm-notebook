@@ -150,6 +150,8 @@ class BPMNotebook
           suggest_for_setlist( setlist_name_symbol.to_s, interface )
         when :remove
           remove_from_setlist( setlist_name_symbol.to_s, interface )
+        when :export
+          export_setlist( setlist_name_symbol.to_s, interface)
         when :clear
           clear_setlist( setlist_name_symbol.to_s, interface )
         end
@@ -222,6 +224,20 @@ class BPMNotebook
         performance_to_destroy = Performance.find_by( setlist_id: setlist_to_remove_from.id, song_id: song_to_remove.id )
         performance_to_destroy.destroy
         puts "Song '#{ song_to_remove_symbol }' successfully removed from setlist '#{ setlist_name }'"
+      end
+      interface.wait_for_keypress
+    end
+
+    def export_setlist( setlist_name, interface )
+      system 'clear'
+      confirm = interface.prompt.yes?("Are you sure you want to export setlist #{setlist_name}?")
+      if confirm
+        File.open( setlist_name, "w+") do |line|
+          Setlist.find_by(name: setlist_name).songs.each{|song| line.puts(song.spotify_id) }
+        end
+        puts "Setlist #{setlist_name} successfully exported."
+      else
+        puts "Export canceled. Setlist #{setlist_name} not exported."
       end
       interface.wait_for_keypress
     end
