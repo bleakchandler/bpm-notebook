@@ -1,3 +1,4 @@
+require 'find'
 require 'dotenv'
 Dotenv.load
 
@@ -19,6 +20,8 @@ class BPMNotebook
         case choice
         when :new_setlist
           create_new_setlist( User.find( self.user_id ), interface )
+        when :import_setlist
+          import_setlist( User.find( self.user_id ), interface )
         when :delete_setlist
           delete_setlist( User.find( self.user_id ), interface )
         when :goodbye
@@ -114,6 +117,28 @@ class BPMNotebook
       Setlist.create( name: new_setlist_name, tempo: new_setlist_tempo, user_id: user.id )
       puts "Setlist '#{ new_setlist_name }' successfully created!"
       interface.wait_for_keypress
+    end
+
+    def import_setlist( user, interface )
+      system "clear"
+      setlist_to_search_for = interface.prompt.ask( "Enter the name of the setlist to import:" )
+      setlist_search = Find.find( Dir.pwd ).to_a.find{ |filepath| filepath.include?( setlist_to_search_for ) }
+      if setlist_search.nil?
+        puts "Search failed! No exported setlist with name '#{ setlist_to_search_for }' found!"
+      else
+        create_setlist_from_filepath( setlist_search, setlist_to_search_for, user )
+        puts "User successfully imported setlist with name '#{ setlist_to_search_for }'!"
+      end
+      interface.wait_for_keypress
+    end
+
+    def create_setlist_from_filepath( filepath, new_setlist_name, user )
+      file_lines_array = File.open( filepath ).read.split( "\n" )
+      imported_setlist = Setlist.create( name: new_setlist_name, tempo: file_lines_array[ 0 ], user_id: user.id )
+      file_lines_array[ 1..-1 ].each do | spotify_id |
+        imported_song = Song.create( spotify_id: spotify_id )
+        Performance.create( setlist_id: imported_setlist.id, song_id: imported_song.id )
+      end
     end
 
     def delete_setlist( user, interface )
@@ -233,6 +258,7 @@ class BPMNotebook
       confirm = interface.prompt.yes?("Are you sure you want to export setlist #{setlist_name}?")
       if confirm
         File.open( setlist_name, "w+") do |line|
+          line.puts( Setlist.find_by(name: setlist_name).tempo )
           Setlist.find_by(name: setlist_name).songs.each{|song| line.puts(song.spotify_id) }
         end
         puts "Setlist #{setlist_name} successfully exported."

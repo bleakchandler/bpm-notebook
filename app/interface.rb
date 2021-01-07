@@ -28,6 +28,7 @@ class Interface
       system "clear"
       menu_hash = user.setlists.map{ | setlist | [ "#{setlist.name} (#{Setlist.find_by(name: setlist.name).tempo} BPM)", setlist.name.to_sym ] }.to_h
       menu_hash.store( "(new setlist)".to_sym, :new_setlist )
+      menu_hash.store( "(import setlist)".to_sym, :import_setlist )
       menu_hash.store( "(delete setlist)".to_sym, :delete_setlist )
       menu_hash.store( "(quit)".to_sym, :goodbye )
       self.prompt.select("Choose a setlist or create a new setlist:", menu_hash )
