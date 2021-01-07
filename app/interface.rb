@@ -9,39 +9,43 @@ class Interface
     def welcome
         system "clear"
         puts "Awesome Welcome Screen"
-        self.prompt.keypress("Press any key to continue")
+        self.wait_for_keypress
+    end
+
+    def wait_for_keypress
+      self.prompt.keypress("Press any key to continue")
     end
 
     def main_menu( user )
-        # Main menu:
-        # - list of all setlists
-        # - (create new setlist)
-        # - (delete setlist)
-        # - (quit)
-        system "clear"
-        menu_hash = user.setlists.map{ | setlist | [ "#{setlist.name} (#{Setlist.find_by(name: setlist.name).tempo} BPM)", setlist.name.to_sym ] }.to_h
-        menu_hash.store( "(new setlist)".to_sym, :new_setlist )
-        menu_hash.store( "(delete setlist)".to_sym, :delete_setlist )
-        menu_hash.store( "(quit)".to_sym, :goodbye )
-        self.prompt.select("Choose a setlist or create a new setlist:", menu_hash )
+      # Main menu:
+      # - list of all setlists
+      # - (create new setlist)
+      # - (delete setlist)
+      # - (quit)
+      system "clear"
+      menu_hash = user.setlists.map{ | setlist | [ "#{setlist.name} (#{Setlist.find_by(name: setlist.name).tempo} BPM)", setlist.name.to_sym ] }.to_h
+      menu_hash.store( "(new setlist)".to_sym, :new_setlist )
+      menu_hash.store( "(delete setlist)".to_sym, :delete_setlist )
+      menu_hash.store( "(quit)".to_sym, :goodbye )
+      self.prompt.select("Choose a setlist or create a new setlist:", menu_hash )
     end
 
     def setlist_menu( setlist_name )
-        # Setlist menu:
-        #   -print a list of current songs
-        #   -option to add a song from spotify
-        #   -option to remove a song from spotify
-        #   -clear playlist
-        #   -go back to main menu
-        system "clear"
-        puts "Setlist name: #{setlist_name} (#{Setlist.find_by(name: setlist_name).tempo} BPM)"
-        if Setlist.find_by(name: setlist_name).songs.empty?
-          puts "(no songs)"
-        else
-          Setlist.find_by(name: setlist_name).songs.each_with_index {|song, index| puts "#{index + 1}. #{song.to_s}" }
-        end
-        menu_hash = {"Add song from Spotify": :add, "Suggest song from Spotify": :suggest, "Remove song from setlist": :remove, "Clear setlist": :clear, "Go back to main menu": :back}
-        self.prompt.select("Options:", menu_hash)
+      # Setlist menu:
+      #   -print a list of current songs
+      #   -option to add a song from spotify
+      #   -option to remove a song from spotify
+      #   -clear playlist
+      #   -go back to main menu
+      system "clear"
+      puts "Setlist name: #{setlist_name} (#{Setlist.find_by(name: setlist_name).tempo} BPM)"
+      if Setlist.find_by(name: setlist_name).songs.empty?
+        puts "(no songs)"
+      else
+        Setlist.find_by(name: setlist_name).songs.each_with_index {|song, index| puts "#{index + 1}. #{song.to_s}" }
+      end
+      menu_hash = {"Add song from Spotify": :add, "Suggest song from Spotify": :suggest, "Remove song from setlist": :remove, "Clear setlist": :clear, "Go back to main menu": :back}
+      self.prompt.select("Options:", menu_hash)
     end
 
     def delete_setlist_menu( user )
@@ -86,11 +90,12 @@ class Interface
     end
 
     def suggestion_filter_menu( feature_to_suggest_by, setlist_name )
-      if feature_to_suggest_by == :tempo
+      case feature_to_suggest_by
+      when :tempo
         tempo_min_max = self.prompt.ask( "How close to setlist's tempo should the suggested song be?", convert: :float )
         this_setlist = Setlist.find_by( name: setlist_name )
         return ( ( this_setlist.tempo - tempo_min_max )..( this_setlist.tempo + tempo_min_max ) )
-      elsif feature_to_suggest_by == :loudness
+      when :loudness
         return ( -Float::INFINITY..self.prompt.ask( "What's the loudest the suggested song should be?", convert: :float ) )
       else
         feature_adjective = { danceability: "danceable", energy: "energetic", valence: "compressed" }
@@ -104,15 +109,16 @@ class Interface
       puts "Suggestions from #{Setlist.find_by(name: setlist_name).user.name}'s playlist '#{playlist_to_choose_from.name}' - filtered by #{ feature_to_suggest_by.to_s } ±#{ how_to_suggest.to_s }"
       playlist_spotify_ids = playlist_to_choose_from.tracks.map( &:id )
       suggested_song_ids = nil
-      if feature_to_suggest_by == :tempo
+      case feature_to_suggest_by
+      when :tempo
         suggested_song_ids = playlist_spotify_ids.select{ | song_id | how_to_suggest.cover?( RSpotify::AudioFeatures.find( song_id ).tempo ) }
-      elsif feature_to_suggest_by == :danceability
+      when :danceability
         suggested_song_ids = playlist_spotify_ids.select{ | song_id | how_to_suggest.cover?( RSpotify::AudioFeatures.find( song_id ).danceability ) }
-      elsif feature_to_suggest_by == :energy
+      when :energy
         suggested_song_ids = playlist_spotify_ids.select{ | song_id | how_to_suggest.cover?( RSpotify::AudioFeatures.find( song_id ).energy ) }
-      elsif feature_to_suggest_by == :valence
+      when :valence
         suggested_song_ids = playlist_spotify_ids.select{ | song_id | how_to_suggest.cover?( RSpotify::AudioFeatures.find( song_id ).valence ) }
-      elsif feature_to_suggest_by == :loudness
+      when :loudness
         suggested_song_ids = playlist_spotify_ids.select{ | song_id | how_to_suggest.cover?( RSpotify::AudioFeatures.find( song_id ).loudness ) }
       end
       menu_of_suggested_song_ids = suggested_song_ids.map{ | song_id | [ RSpotify::Track.find( song_id ).name, song_id ] }.to_h
