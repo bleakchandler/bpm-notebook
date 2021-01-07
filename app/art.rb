@@ -1,6 +1,8 @@
 class SongPlayer
+  
   attr_reader :command, :file_path
   attr_accessor :pid
+  
   def initialize
     @command = "afplay"
     @file_path = "because_you_move_me.mp3"
@@ -15,8 +17,8 @@ class SongPlayer
     Process.kill 'TERM', self.pid
     ""
   end
+  
 end
-
 
 class Equalizer
 def self.logo
@@ -38,7 +40,7 @@ def self.logo
 end
 
 def self.frame1
-              f1 =  <<-'EOF'
+  f1 =  <<-'EOF'
 
                                      ______     ______   __    __
                                     /\  == \   /\  == \ /\ "-./  \
@@ -60,14 +62,14 @@ def self.frame1
                                                  __    __    __
                                               __ __ __ __ __ __ __ __
                                            🎶Josh Frank & James DeSousa🎶
-                EOF
-                puts f1.colorize(:red)
+  EOF
+  puts f1.colorize(:red)
   sleep(0.2)
   system "clear"
   end
 
 def self.frame2
-                f2 =  <<-'EOF'
+  f2 =  <<-'EOF'
 
                                      ______     ______   __    __
                                     /\  == \   /\  == \ /\ "-./  \
@@ -89,14 +91,14 @@ def self.frame2
                                               __ __    __ __ __    __
                                               __ __ __ __ __ __ __ __
                                            🎶Josh Frank & James DeSousa🎶
-                EOF
-                puts f2.colorize(:orange)
+  EOF
+  puts f2.colorize(:orange)
   sleep(0.2)
   system "clear"
 end
 
 def self.frame3
-                f3 =  <<-'EOF'
+  f3 =  <<-'EOF'
 
                                      ______     ______   __    __
                                     /\  == \   /\  == \ /\ "-./  \
@@ -118,14 +120,14 @@ def self.frame3
                                               __ __    __ __ __    __
                                               __ __ __ __ __ __ __ __
                                            🎶Josh Frank & James DeSousa🎶
-              EOF
-              puts f3.colorize(:yellow)
-sleep(0.2)
-system "clear"
+  EOF
+  puts f3.colorize(:yellow)
+  sleep(0.2)
+  system "clear"
 end
 
 def self.frame4
-                f4 =  <<-'EOF'
+  f4 =  <<-'EOF'
 
                                      ______     ______   __    __
                                     /\  == \   /\  == \ /\ "-./  \
@@ -147,14 +149,14 @@ def self.frame4
                                               __ __ __ __ __ __ __ __
                                               __ __ __ __ __ __ __ __
                                            🎶Josh Frank & James DeSousa🎶
-              EOF
-              puts f4.colorize(:green)
+  EOF
+  puts f4.colorize(:green)
   sleep(0.3)
   system "clear"
 end
 
 def self.frame5
-                f5 =  <<-'EOF'
+  f5 =  <<-'EOF'
 
                                      ______     ______   __    __
                                     /\  == \   /\  == \ /\ "-./  \
@@ -176,14 +178,14 @@ def self.frame5
                                               __ __ __ __ __ __ __ __
                                               __ __ __ __ __ __ __ __
                                            🎶Josh Frank & James DeSousa🎶
-              EOF
-              puts f5.colorize(:light_blue)
+  EOF
+  puts f5.colorize(:light_blue)
   sleep(0.2)
   system "clear"
 end
 
 def self.frame6
-                f6 = <<-'EOF'
+  f6 = <<-'EOF'
 
                                      ______     ______   __    __
                                     /\  == \   /\  == \ /\ "-./  \
@@ -205,14 +207,14 @@ def self.frame6
                                               __ __    __ __ __    __
                                               __ __ __ __ __ __ __ __
                                            🎶Josh Frank & James DeSousa🎶
-                EOF
-                puts f6.colorize(:cyan)
+  EOF
+  puts f6.colorize(:cyan)
   sleep(0.1)
   system "clear"
 end
 
 def self.frame7
-                f7 =  <<-'EOF'
+  f7 =  <<-'EOF'
 
                                      ______     ______   __    __
                                     /\  == \   /\  == \ /\ "-./  \
@@ -234,14 +236,14 @@ def self.frame7
                                               __ __ __ __ __ __ __ __
                                               __ __ __ __ __ __ __ __
                                            🎶Josh Frank & James DeSousa🎶
-              EOF
-              puts f7.colorize(:light_green)
+  EOF
+  puts f7.colorize(:light_green)
   sleep(0.2)
   system "clear"
 end
 
 def self.frame8
-                f8 = <<-'EOF'
+  f8 = <<-'EOF'
 
                                      ______     ______   __    __
                                     /\  == \   /\  == \ /\ "-./  \
@@ -263,14 +265,14 @@ def self.frame8
                                               __ __    __ __ __    __
                                               __ __ __ __ __ __ __ __
                                            🎶Josh Frank & James DeSousa🎶
-              EOF
-              puts f8.colorize(:red)
-sleep(0.2)
-system "clear"
+  EOF
+  puts f8.colorize(:red)
+  sleep(0.2)
+  system "clear"
 end
 
 def self.frame9
-                f9 = <<-'EOF'
+  f9 = <<-'EOF'
 
                                      ______     ______   __    __
                                     /\  == \   /\  == \ /\ "-./  \
@@ -292,14 +294,14 @@ def self.frame9
                                               __ __ __ __ __ __ __ __
                                               __ __ __ __ __ __ __ __
                                            🎶Josh Frank & James DeSousa🎶
-              EOF
-              puts f9.colorize(:yellow)
+  EOF
+  puts f9.colorize(:yellow)
   sleep(0.3)
   system "clear"
 end
 
 def self.frame10
-                f10 =  <<-'EOF'
+  f10 =  <<-'EOF'
 
                                      ______     ______   __    __
                                     /\  == \   /\  == \ /\ "-./  \
@@ -321,14 +323,14 @@ def self.frame10
                                               __ __ __ __ __ __ __ __
                                               __ __ __ __ __ __ __ __
                                            🎶Josh Frank & James DeSousa🎶
-              EOF
-              puts f10.colorize(:pink)
-sleep(0.1)
-system "clear"
+  EOF
+  puts f10.colorize(:pink)
+  sleep(0.1)
+  system "clear"
 end
 
 def self.frame11
-                f11 = <<-'EOF'
+  f11 = <<-'EOF'
 
                                      ______     ______   __    __
                                     /\  == \   /\  == \ /\ "-./  \
@@ -350,14 +352,14 @@ def self.frame11
                                               __ __ __ __ __ __ __ __
                                               __ __ __ __ __ __ __ __
                                            🎶Josh Frank & James DeSousa🎶
-              EOF
-              puts f11.colorize(:green)
-sleep(0.3)
-system "clear"
+  EOF
+  puts f11.colorize(:green)
+  sleep(0.3)
+  system "clear"
 end
 
 def self.frame12
-                f12 = <<-'EOF'
+  f12 = <<-'EOF'
 
                                      ______     ______   __    __
                                     /\  == \   /\  == \ /\ "-./  \
@@ -379,14 +381,14 @@ def self.frame12
                                               __ __ __ __ __ __ __ __
                                               __ __ __ __ __ __ __ __
                                            🎶Josh Frank & James DeSousa🎶
-              EOF
-              puts f12.colorize(:yellow)
-sleep(0.2)
-system "clear"
+  EOF
+  puts f12.colorize(:yellow)
+  sleep(0.2)
+  system "clear"
 end
 
 def self.frame13
-                f13 = <<-'EOF'
+  f13 = <<-'EOF'
 
                                      ______     ______   __    __
                                     /\  == \   /\  == \ /\ "-./  \
@@ -408,19 +410,9 @@ def self.frame13
                                               __ __ __ __ __ __ __ __
                                               __ __ __ __ __ __ __ __
                                            🎶Josh Frank & James DeSousa🎶
-              EOF
-              puts f13.colorize(:yellow)
-
-
-
+  EOF
+  puts f13.colorize(:yellow)
 end
-
-  def end_song
-
-  end
-
-
-
 
 def self.animation
   2.times do
