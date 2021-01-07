@@ -8,8 +8,11 @@ class Interface
 
     def welcome
         system "clear"
-        puts "Awesome Welcome Screen"
+        song = SongPlayer.new
+        song.start_playing
+        puts Equalizer.animation
         self.wait_for_keypress
+        song.stop_playing
     end
 
     def wait_for_keypress
@@ -127,7 +130,19 @@ class Interface
     end
 
     def goodbye
-        puts "Awesome Goodbye screen"
+        goodbye_ascii =  <<-'EOF'
+
+
+           ____      U  ___ u    U  ___ u   ____       ____     __   __ U _____ u   _
+        U /"___|u     \/"_ \/     \/"_ \/  |  _"\   U | __")u   \ \ / / \| ___"|/ U|"|u
+        \| |  _ /     | | | |     | | | | /| | | |   \|  _ \/    \ V /   |  _|"   \| |/
+         | |_| |  .-,_| |_| | .-,_| |_| | U| |_| |\   | |_) |   U_|"|_u  | |___    |_|
+          \____|   \_)-\___/   \_)-\___/   |____/ u   |____/      |_|    |_____|   (_)
+          _)(|_         \\          \\      |||_     _|| \\_  .-,//|(_   <<   >>   |||_
+         (__)__)       (__)        (__)    (__)_)   (__) (__)  \_) (__) (__) (__) (__)_)
+
+         EOF
+         puts goodbye_ascii.colorize(:red)
         puts "Successfully logged out! Goodbye!"
     end
 
