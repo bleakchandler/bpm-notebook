@@ -3,7 +3,7 @@
 ## Summary
 Back in the golden age of disco, DJs would create setlists using BPM notebooks - large references of the year's biggest hits organized by BPM (beats per minute). They would then use these references to create sets for a given night with a consistent tempo, dynamic range and mood based on the atmosphere of the party. Thanks to the magic of Spotify, we've now written an app that does the same thing!
 
-This app was written by [Josh Frank](https://github.com/josh-frank) and [James DeSousa](https://github.com/jamesdesousa) during their time at [Flatiron School](https://flatironschool.com/). It was written as an exercise software engineering concepts, including the use of ORM using SQL and the creation of a CLI. The app uses 'tty-prompt' to create a handsome interface, and the `ActiveRecord` ORM to persist users, setlists and songs. It also makes extensive use of `RSpotify`, a Ruby wrapper for the Spotify API written by [Guilherme Gorgulho](https://www.linkedin.com/in/guilhermesad/).
+This app was written by [Josh Frank](https://github.com/josh-frank) and [James DeSousa](https://github.com/jamesdesousa) during their time at [Flatiron School](https://flatironschool.com/). It was written as an exercise software engineering concepts, including the use of ORM using SQL and the creation of a CLI. The app uses `tty-prompt` to create a handsome interface, and the `ActiveRecord` ORM to persist users, setlists and songs. It also makes extensive use of `RSpotify`, a Ruby wrapper for the Spotify API written by [Guilherme Gorgulho](https://www.linkedin.com/in/guilhermesad/).
 
 ## Instructions
 
@@ -17,12 +17,13 @@ James has logged in successfully
 Press any key to continue 
 ```
 
-The main menu displays a list of a user's extant setlists as well as menu options for creating a new setlist or deleting an extant setlist after a confirmation. Each setlist has a target tempo which the app will use to make suggestions.
+The main menu displays a list of a user's extant setlists as well as menu options for creating a new setlist, importing a setlist or deleting an extant setlist after a confirmation. Each setlist has a target tempo which the app will use to make suggestions.
 
 ```
 Choose a setlist or create a new setlist: 
 ‣ James's amazing set (110.25 BPM)
   (new setlist)
+  (import setlist)
   (delete setlist)
   (quit)
 ```
@@ -40,6 +41,7 @@ Options: (Press ↑/↓ arrow to move and Enter to select)
 ‣ Add song from Spotify
   Suggest song from Spotify
   Remove song from setlist
+  Export setlist
   Clear setlist
   Go back to main menu
 ```
@@ -78,6 +80,14 @@ A user can also remove a song from the current setlist, or remove all songs by s
 ```
 Are you sure you want to remove all songs from setlist 'James's amazing set?' Yes
 Setlist 'James's amazing set' cleared successfully.
+Press any key to continue 
+```
+
+The app's setlist menu also provides users the ability to export (save) setlists to a local text file. Exported setlists can be re-imported in the main menu, giving a user the freedom to change setlists while saving progress.
+
+```
+Are you sure you want to export setlist James's amazing set? Yes
+Setlist James's amazing set successfully exported.
 Press any key to continue 
 ```
 

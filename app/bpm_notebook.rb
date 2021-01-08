@@ -195,8 +195,10 @@ class BPMNotebook
         return
       end
       song_from_chosen_playlist = interface.choose_song_from_playlist_menu(playlist_to_choose_from , setlist_name)
-      confirmed = interface.add_song_to_setlist_confirmation(song_from_chosen_playlist, setlist_name)
-      if confirmed
+      if song_from_chosen_playlist != :back
+        confirmed = interface.add_song_to_setlist_confirmation(song_from_chosen_playlist, setlist_name)
+      end
+      if confirmed || song_from_chosen_playlist == :back
         created_song = Song.create(spotify_id: song_from_chosen_playlist)
         setlist_to_add_to = Setlist.find_by(name: setlist_name)
         Performance.create(song_id: created_song.id, setlist_id: setlist_to_add_to.id)
