@@ -96,14 +96,21 @@ class Interface
     def suggestion_filter_menu( feature_to_suggest_by, setlist_name )
       case feature_to_suggest_by
       when :tempo
-        tempo_min_max = self.prompt.ask( "How close to setlist's tempo should the suggested song be?", convert: :float )
+        tempo_min_max = self.prompt.ask( "How close to setlist's tempo should the suggested song be? Enter a positive number less than 60:", convert: :float ) do | input |
+          input.validate( Proc.new{ | n | ( 0..60 ).cover?( n.to_f ) }, "#{ input } out of expected range! Enter a positive number less than 60!" )
+        end
         this_setlist = Setlist.find_by( name: setlist_name )
         return ( ( this_setlist.tempo - tempo_min_max )..( this_setlist.tempo + tempo_min_max ) )
       when :loudness
-        return ( -Float::INFINITY..self.prompt.ask( "What's the loudest the suggested song should be?", convert: :float ) )
+        loudness_min_max = self.prompt.ask( "What's the loudest the suggested song should be? Enter a negative number:", convert: :float )  do | input |
+          input.validate( Proc.new{ | n | n.to_f < 0 }, "#{ input } out of expected range! Enter a negative number!" )
+        end
+        return ( -Float::INFINITY..loudness_min_max )
       else
         feature_adjective = { danceability: "danceable", energy: "energetic", valence: "compressed" }
-        feature_min_max = self.prompt.ask( "How #{ feature_adjective[ feature_to_suggest_by ] } should the suggested song be?", convert: :float )
+        feature_min_max = self.prompt.ask( "How #{ feature_adjective[ feature_to_suggest_by ] } should the suggested song be? Enter a value between 0.0 and 1.0:", convert: :float ) do | input |
+          input.validate( Proc.new{ | n | ( 0..1 ).cover?( n.to_f ) }, "#{ input } out of expected range 0.0-1.0! Enter a value between 0.0 and 1.0!" )
+        end
         return ( ( feature_min_max - 0.15 )..( feature_min_max + 0.15 ) )
       end
     end

@@ -257,11 +257,17 @@ class BPMNotebook
 
     def export_setlist( setlist_name, interface )
       system 'clear'
+      setlist_to_export = Setlist.find_by(name: setlist_name)
+      if setlist_to_export.songs.empty?
+        puts "Cannot export an empty setlist!"
+        interface.wait_for_keypress
+        return
+      end
       confirm = interface.prompt.yes?("Are you sure you want to export setlist #{setlist_name}?")
       if confirm
         File.open( setlist_name, "w+") do |line|
-          line.puts( Setlist.find_by(name: setlist_name).tempo )
-          Setlist.find_by(name: setlist_name).songs.each{|song| line.puts(song.spotify_id) }
+          line.puts( setlist_to_export.tempo )
+          setlist_to_export.songs.each{|song| line.puts(song.spotify_id) }
         end
         puts "Setlist #{setlist_name} successfully exported."
       else
